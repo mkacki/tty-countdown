@@ -18,11 +18,12 @@ tty-countdown hh:mm:ss message
 ## Install 
 
 ```
-   make all
+   make
+   sudo make install
 ```
 
 ## Unistall
 
 ```
-    make uninstall
+    sudo make uninstall
 ```
