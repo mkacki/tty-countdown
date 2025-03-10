@@ -170,22 +170,34 @@ void countdown(int total_seconds, const char *message) {
     long start_time_ms = get_current_time_ms();
     long end_time_ms = start_time_ms + (long long)total_seconds * 1000;
 
+     int last_width = get_terminal_width();
+     int last_height = get_terminal_height();
+     int timer_width = (13 + 1) * 8 - 1;  // 13 chars per element + 1 space, 8 elements
+     int content_height = 9;  // 7 timer + 1 empty + 1 message
+
     while (1) {
 
         long current_time_ms = get_current_time_ms();
         long remaining_ms = end_time_ms - current_time_ms;
         if (remaining_ms <= 0) break;
-       
+
         int terminal_width = get_terminal_width();
         int terminal_height = get_terminal_height();
-        int timer_width = (13 + 1) * 8 - 1;  // 13 chars per element, 8 elements, spaces
+
+         // Clear screen if size changed significantly
+         if (terminal_width != last_width || terminal_height != last_height) {
+            printf("\033[2J");
+            last_width = terminal_width;
+            last_height = terminal_height;
+         }
+
         int left_padding = (terminal_width - timer_width) / 2;
         if (left_padding < 0) left_padding = 0;
         int content_height = 9;  // 7 for clock, 1 empty, 1 for message
         int top_padding = (terminal_height - content_height) / 2;
         if (top_padding < 0) top_padding = 0;
 
-        printf("\033[%d;1H", top_padding + 1);
+
 
         int remaining_seconds = remaining_ms / 1000;
         int hours = remaining_seconds / 3600;
@@ -193,7 +205,14 @@ void countdown(int total_seconds, const char *message) {
         int seconds = remaining_seconds % 60;
 
         printf("\033[32m");  // Set color to green
-        print_timer(hours, minutes, seconds, left_padding);
+        if (timer_width <= terminal_width && content_height <= terminal_height ) {
+            printf("\033[%d;1H", top_padding + 1);
+            print_timer(hours, minutes, seconds, left_padding);
+        } else {
+            printf("\033[%d;1H", (terminal_height - 5)/2 + 1);
+            printf("%*s", (terminal_width - 12)/2 , "");
+            printf("%02d : %02d : %02d\n", hours, minutes,seconds);
+        }
         printf("\n");  // Empty line
         int message_padding = (terminal_width - strlen(message)) / 2;
         if (message_padding < 0) message_padding = 0;
