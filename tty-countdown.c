@@ -3,6 +3,7 @@
 #include <unistd.h>     // For sleep()
 #include <string.h>
 #include <sys/ioctl.h>  // For terminal width and height
+#include <signal.h>
 
 /** Get the terminal's width in columns */
 int get_terminal_width() {
@@ -202,7 +203,21 @@ void countdown(int total_seconds, const char *message) {
     printf("\033[?25h");  // Show cursor
 }
 
+void sigint_handler(int signum) {
+    const char show_cursor[] = "\033[?25h";
+    write(STDOUT_FILENO, show_cursor, 6);
+    exit(1);
+}
+
 int main(int argc, char *argv[]) {
+
+    // Set up SIGINT handler 
+    struct sigaction sa;
+    sa.sa_handler = sigint_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+    sigaction(SIGINT, &sa, NULL);
+    
     if (argc != 3) {
         printf("Usage: %s HH:MM:SS message\n", argv[0]);
         return 1;

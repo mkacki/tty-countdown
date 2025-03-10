@@ -11,4 +11,6 @@ all: clean compile install
 
 uninstall:
 	rm /usr/local/bin/tty-countdown
+test: clean compile
+	./tty-countdown 00:01:00 Test
 
