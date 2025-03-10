@@ -25,7 +25,8 @@ int get_terminal_height() {
 
 /** Clear the terminal screen */
 void clear_screen() {
-    printf("\033[2J\033[1;1H");  // ANSI escape codes to clear and move cursor to top-left
+    printf("\033[2J\033[1;1H");
+    printf("\033[2J"); // ANSI escape codes to clear and move cursor to top-left
 }
 
 /** Define a 7x13 representation for a digit using solid blocks */
@@ -154,11 +155,27 @@ void print_timer(int hours, int minutes, int seconds, int left_padding) {
     }
 }
 
+// Get current time in seconds (monotonic clock)
+long long get_current_time_ms() {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (long long)ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
+}
+
 /** Run the countdown with a message */
 void countdown(int total_seconds, const char *message) {
     printf("\033[?25l");  // Hide cursor
-    while (total_seconds >= 0) {
-        clear_screen();
+    printf("\033[2J");
+
+    long start_time_ms = get_current_time_ms();
+    long end_time_ms = start_time_ms + (long long)total_seconds * 1000;
+
+    while (1) {
+
+        long current_time_ms = get_current_time_ms();
+        long remaining_ms = end_time_ms - current_time_ms;
+        if (remaining_ms <= 0) break;
+       
         int terminal_width = get_terminal_width();
         int terminal_height = get_terminal_height();
         int timer_width = (13 + 1) * 8 - 1;  // 13 chars per element, 8 elements, spaces
@@ -168,14 +185,12 @@ void countdown(int total_seconds, const char *message) {
         int top_padding = (terminal_height - content_height) / 2;
         if (top_padding < 0) top_padding = 0;
 
-        // Add top padding for vertical centering
-        for (int i = 0; i < top_padding; i++) {
-            printf("\n");
-        }
+        printf("\033[%d;1H", top_padding + 1);
 
-        int hours = total_seconds / 3600;
-        int minutes = (total_seconds % 3600) / 60;
-        int seconds = total_seconds % 60;
+        int remaining_seconds = remaining_ms / 1000;
+        int hours = remaining_seconds / 3600;
+        int minutes = (remaining_seconds % 3600) / 60;
+        int seconds = remaining_seconds % 60;
 
         printf("\033[32m");  // Set color to green
         print_timer(hours, minutes, seconds, left_padding);
@@ -184,9 +199,10 @@ void countdown(int total_seconds, const char *message) {
         if (message_padding < 0) message_padding = 0;
         printf("%*s%s\n", message_padding, "", message);
         printf("\033[0m");  // Reset color
+        fflush(stdout);
 
-        sleep(1);
-        total_seconds--;
+        // Sleep for the remainder of a second to maintain 1 Hz update
+        usleep(1000000 - (remaining_ms % 1000) * 1000);
     }
 
     // Display "Time's up!" when done
