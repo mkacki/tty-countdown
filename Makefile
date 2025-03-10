@@ -2,7 +2,7 @@
 default: compile
 
 clean:
-	rm tty-countdown
+	rm -f tty-countdown
 compile:
 	gcc tty-countdown.c -o tty-countdown
 install:
