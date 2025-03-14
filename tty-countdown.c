@@ -31,90 +31,70 @@ void clear_screen() {
 }
 
 /** Define a 7x13 representation for a digit using solid blocks */
-void display_digit(int digit, char display[7][32]) {
-    const char *digits[10][7] = {
+void display_digit(int digit, char display[5][32]) {
+    const char *digits[10][5] = {
         // 0: Top, bottom, and all verticals
-        {"   ██████   ",
-         "  ██    ██  ",
-         "  ██    ██  ",
-         "  ██    ██  ",
-         "  ██    ██  ",
-         "  ██    ██  ",
-         "   ██████   "},
+        {"██████",
+         "██  ██",
+         "██  ██",
+         "██  ██",
+         "██████"},
         // 1: Right vertical bar
-        {"      ██    ",
-         "     ███    ",
-         "      ██    ",
-         "      ██    ",
-         "      ██    ",
-         "      ██    ",
-         "    ██████  "},
+        {"    ██",
+         "    ██",
+         "    ██",
+         "    ██",
+         "    ██"},
         // 2: Top, middle, bottom with diagonals
-        {"   ██████   ",
-         "  ██    ██  ",
-         "        ██  ",
-         "   ██████   ",
-         "  ██        ",
-         "  ██        ",
-         "  ███████   "},
+        {"██████",
+         "    ██",
+         "██████",
+         "██    ",
+         "██████"},
         // 3: Top, middle, bottom
-        {"   ██████   ",
-         "  ██    ██  ",
-         "        ██  ",
-         "   ██████   ",
-         "        ██  ",
-         "  ██    ██  ",
-         "   ██████   "},
+        {"██████",
+         "    ██",
+         "██████",
+         "    ██",
+         "██████"},
         // 4: Left vertical and middle
-        {"  ██    ██  ",
-         "  ██    ██  ",
-         "  ██    ██  ",
-         "  ████████  ",
-         "        ██  ",
-         "        ██  ",
-         "        ██  "},
+        {"██  ██",
+         "██  ██",
+         "██████",
+         "    ██",
+         "    ██"},
         // 5: Top, middle, bottom with left vertical
-        {"  ███████   ",
-         "  ██        ",
-         "  ██        ",
-         "  ███████   ",
-         "        ██  ",
-         "  ██    ██  ",
-         "   ██████   "},
+        {"██████",
+         "██    ",
+         "██████",
+         "    ██",
+         "██████"},
         // 6: All except top-right
-        {"   ██████   ",
-         "  ██        ",
-         "  ██        ",
-         "   ██████   ",
-         "  ██    ██  ",
-         "  ██    ██  ",
-         "   ██████   "},
+        {"██████",
+         "██    ",
+         "██████",
+         "██  ██",
+         "██████"},
         // 7: Top and right vertical
-        {"  ██████    ",
-         "      ██    ",
-         "      ██    ",
-         "      ██    ",
-         "      ██    ",
-         "      ██    ",
-         "      ██    "},
+        {"██████",
+         "    ██",
+         "    ██",
+         "    ██",
+         "    ██"},
         // 8: All segments
-        {"   ██████   ",
-         "  ██    ██  ",
-         "  ██    ██  ",
-         "   ██████   ",
-         "  ██    ██  ",
-         "  ██    ██  ",
-         "   ██████   "},
+        {"██████",
+         "██  ██",
+         "██████",
+         "██  ██",
+         "██████"},
         // 9: All except bottom-left
-        {"   ██████   ",
-         "  ██    ██  ",
-         "  ██    ██  ",
-         "   ███████  ",
-         "        ██  ",
-         "        ██  ",
-         "    █████   "},
+        {"██████",
+         "██  ██",
+         "██████",
+         "    ██",
+         "██████"}
     };
-    for (int i = 0; i < 7; i++) {
+    for (int i = 0; i < 5; i++) {
         strcpy(display[i], digits[digit][i]);
     }
 }
@@ -134,20 +114,20 @@ void print_timer(int hours, int minutes, int seconds, int left_padding) {
     display_digit(h1, disp[0]);
     display_digit(h2, disp[1]);
     // Colon between hours and minutes
-    for (int i = 0; i < 7; i++) {
-        strcpy(disp[2][i], (i == 2 || i == 4) ? "     ██     " : "            ");
+    for (int i = 0; i < 5; i++) {
+        strcpy(disp[2][i], (i == 1 || i == 3) ? " ██ " : "    ");
     }
     display_digit(m1, disp[3]);
     display_digit(m2, disp[4]);
     // Colon between minutes and seconds
-    for (int i = 0; i < 7; i++) {
-        strcpy(disp[5][i], (i == 2 || i == 4) ? "     ██     " : "            ");
+    for (int i = 0; i < 5; i++) {
+        strcpy(disp[5][i], (i == 1 || i == 3) ? " ██ " : "    ");
     }
     display_digit(s1, disp[6]);
     display_digit(s2, disp[7]);
 
     // Print each row with padding
-    for (int row = 0; row < 7; row++) {
+    for (int row = 0; row < 5; row++) {
         printf("%*s", left_padding, "");  // Left padding for centering
         for (int digit = 0; digit < 8; digit++) {
             printf("%s ", disp[digit][row]);  // Space between elements
@@ -173,8 +153,8 @@ void countdown(int total_seconds, const char *message) {
 
      int last_width = get_terminal_width();
      int last_height = get_terminal_height();
-     int timer_width = (13 + 1) * 8 - 1;  // 13 chars per element + 1 space, 8 elements
-     int content_height = 9;  // 7 timer + 1 empty + 1 message
+     int timer_width = (6 + 1) * 6 + 2*4 +1;  // 13 chars per element + 1 space, 8 elements
+     int content_height = 7;  // 5 timer + 1 empty + 1 message
 
     while (1) {
 
@@ -194,11 +174,9 @@ void countdown(int total_seconds, const char *message) {
 
         int left_padding = (terminal_width - timer_width) / 2;
         if (left_padding < 0) left_padding = 0;
-        int content_height = 9;  // 7 for clock, 1 empty, 1 for message
+        int content_height = 7;  // 7 for clock, 1 empty, 1 for message
         int top_padding = (terminal_height - content_height) / 2;
         if (top_padding < 0) top_padding = 0;
-
-
 
         int remaining_seconds = remaining_ms / 1000;
         int hours = remaining_seconds / 3600;
@@ -207,7 +185,7 @@ void countdown(int total_seconds, const char *message) {
 
         printf("\033[32m");  // Set color to green
         if (timer_width <= terminal_width && content_height <= terminal_height ) {
-            printf("\033[%d;1H", top_padding + 1);
+            printf("\033[%d;1H", top_padding + 2);
             print_timer(hours, minutes, seconds, left_padding);
         } else {
             printf("\033[%d;1H", (terminal_height - 5)/2 + 1);
