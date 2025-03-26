@@ -3,7 +3,7 @@
 
 This is simple terminal utility for counting down time 
 
-[![Watch video](tty-countdown.mp4)](tty-countdown.mp4)
+[![Watch the video](https://img.youtube.com/vi/_5tFXJQIzi4/0.jpg)](https://www.youtube.com/watch?v=l1UOGJfLphM)
 
 default usage :
 
