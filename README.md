@@ -3,6 +3,8 @@
 
 This is simple terminal utility for counting down time 
 
+[_(video)_](./tty-countdown.mp4)
+
 default usage :
 
 tty-countdown hh:mm:ss message
